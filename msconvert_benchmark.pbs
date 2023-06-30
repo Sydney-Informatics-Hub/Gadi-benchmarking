@@ -28,4 +28,4 @@ singularity run --env WINEDEBUG=-all \
         --32 \
         --filter "peakPicking vendor msLevel=1-" \
         -o ${outdir} \
-        --outfile ${sample}_${queue}_${ncpus}NCPUS_${mem}MEM.mzML > ${outdir}/${sample}_${queue}_${ncpus}NCPUS_${mem}MEM.log 2>&1
+        --outfile ${outfile_prefix}.mzML > ${outdir}/${outfile_prefix}.log 2>&1

@@ -54,8 +54,8 @@ mkdir -p ${logs}
 
 if [[ "${queue}" =~ ^(normal|express)$ ]]
 then
-	NCPUS=( 1 2 4 6 12 24 48 ) #  based on Gadi NUMA domains for queue
-	#NCPUS=( 4 6 12 24 48) # may need to reduce the number of benchmark runs
+	#NCPUS=( 1 2 4 6 12 24 48 ) #  based on Gadi NUMA domains for queue
+	NCPUS=( 4 6 12 24 48) # may need to reduce the number of benchmark runs
 	max_cpus=48 # total CPU on nodes
 	max_jobfs=400 # In GB, adjust depending on which queue you are benchmarking on  
 	mem_per_cpu=4 # adjust depending on which queue you are benchmarking on 
@@ -66,15 +66,16 @@ then
 	max_jobfs=1400  
 	mem_per_cpu=31 
 	jobfs_per_cpu=$(( $max_jobfs / $max_cpus ))
-	NCPUS=( 1 2 4 6 12 24 48 ) 
-	#NCPUS=( 2 4 6 12 )
+	#NCPUS=( 1 2 4 6 12 24 48 ) 
+	NCPUS=( 2 4 6 12 )
 elif [[ "${queue}" =~ ^(normalbw|expressbw)$ ]]
 then
 	max_cpus=28 
 	max_jobfs=400  
 	mem_per_cpu=9 
 	jobfs_per_cpu=$(( $max_jobfs / $max_cpus ))
-	NCPUS=( 1 7 14 28 )
+	#NCPUS=( 1 7 14 28 )
+	NCPUS=( 7 14 28 )
 else
 	printf "Resource parameters for ${queue} not defined.\nPlease add queue details to this script and re-submit.\n"
 	exit
@@ -96,7 +97,7 @@ do
    
     
    job_name=${short}_${ncpus}N_${mem}M_${sample}
-   #out=${tool}/${sample}_${ncpus}NCPUS_${mem}MEM.out 
+   outfile_prefix=${sample}_${queue}_${ncpus}NCPUS_${mem}MEM 
    dot_e=${logs}/${tool}_${queue}_${ncpus}NCPUS_${mem}MEM_${sample}.e
    dot_o=${logs}/${tool}_${queue}_${ncpus}NCPUS_${mem}MEM_${sample}.o
    
@@ -110,7 +111,7 @@ do
 	-o ${dot_o} \
 	-e ${dot_e} \
 	-N ${job_name} \
-	-v sample="${sample}",wiff="${wiff}",outdir="${outdir}" \
+	-v outfile_prefix="${outfile_prefix}",wiff="${wiff}",outdir="${outdir}" \
 	${script} 
     
    sleep 2
