@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# Don't run this script directly, it is launched by the paired <tool>_benchmark_run.sh script 
+
+#PBS -P <project>
+#PBS -l walltime=02:00:00
+#PBS -q normal
+#PBS -W umask=022
+#PBS -l wd
+#PBS -lstorage=scratch/<project>
+
+### Modules:
+module load nci-parallel/1.0.0a
+module load <as required>
+
+### Temp dirs, if required:  
+export SINGULARITY_TMPDIR=${PBS_JOBFS}/tmp
+export SINGULARITY_CACHEDIR=${PBS_JOBFS}/cache
+
+mkdir -p ${SINGULARITY_TMPDIR} ${SINGULARITY_CACHEDIR}
+
+### Run command, adjust to suit tool: 
+<tool run command and optional parameters> \
+	-i ${input} \ 
+        -o ${outdir}/${outfile_prefix}.out > ${outdir}/${outfile_prefix}.log 2>&1

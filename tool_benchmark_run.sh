@@ -23,10 +23,10 @@
 ### REQUIRED CHANGES ###
 
 #### Inputs - change as required: 
-wiff=./4s_test_raw/061221_WD_EXP1_1_2.wiff # INPUT FILE 
-sample=$(basename ${wiff%.wiff})
-tool=msconvert # name of the tool being benchmarked
-short=msc # for job name ease of viewing on qstat
+input=./input_file.in # INPUT FILE 
+sample=$(basename ${input%.in})
+tool=<tool> # name of the tool being benchmarked
+short=<short-tool-name> # abbreviated tool name, for ease of viewing job name on qstat
 
 ################################################
 
@@ -111,7 +111,7 @@ do
 	-o ${dot_o} \
 	-e ${dot_e} \
 	-N ${job_name} \
-	-v outfile_prefix="${outfile_prefix}",wiff="${wiff}",outdir="${outdir}" \
+	-v outfile_prefix="${outfile_prefix}",input="${input}",outdir="${outdir}" \
 	${script} 
     
    sleep 2
