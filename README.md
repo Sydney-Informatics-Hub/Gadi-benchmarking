@@ -1,5 +1,7 @@
 # Gadi-benchmarking
-Template scripts to automate submission of identical benchmark tasks with increasing compute resources
+Template scripts to automate submission of identical benchmark tasks with increasing compute resources. 
+
+This is to benchmark resources for multi-threading tools, to help determine the optimal number of CPUs and queue type for the job on a single task before submtting the job on many tasks. Benchmarking in this way is critical to ensuring efficient and responsible use of HPC, saving time and compute costs in the long run. 
 
 ## Overview
 Given the need to frequently benchmark bioinformatics tools when developing pipelines, this repository contains a pair of sample scripts that can be adapted for use to other tools. 
