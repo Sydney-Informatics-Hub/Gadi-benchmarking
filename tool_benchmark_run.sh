@@ -2,38 +2,6 @@
 set -a
 
 ################################################
-# Pair of benchmarking scripts, to automate submission of multiple identical 
-# jobs with increasing resources.
-# Outputs and logs are unique for resources, queue and sample. 
-# Setup for runs on normal, express, hugemem, normalbw and expressbw. 
-# CPU settings are determined by NUMA domain sizes
-# If the queue you want to benchmark on is not described here, you can add it under 'QUEUE SETUP' heading
-# If you want to alter the range of CPU values to benchmark on, this can be done by editing the relevant array under the 'QUEUE SETUP' heading
-# The queue to benchmark on is required as the first argument to the script
-# Optional second argument is 'test', where some variables and your script are printed to screen but no job is submitted
-
-# To use:
-#1) Edit 'prefix', 'tool' and 'short' variables within this script
-#2) Within <tool>_benchmark.pbs:
-#	- Edit -P PBS directive to your NCI project
-#	- Edit -lstorage PBS directive to your required NCI storage paths
-#	- Edit walltime ot be sufficient for the lowest-resourced run of your job
-#	- Add your sript body (including module loads) between 'YOUR SCRIPT HERE' and 'END YOUR SCRIPT' headers
-#	- Ensure you have left the last line 'end_test=end' intact
-# 	- Use the variables 'prefix', 'outfile_prefix' and 'outdir' for IO within your script 
-#3) Run a simple check in test mode:
-# 	- Example command to run in test mode on normal queue:
-#	`bash <tool>_benchmark_run.sh normal test`
-#	- This will print variables received from the run script, and your script
-#4) If you also want to do a more thorough test with variable interpolation:
-#	- Within <tool>_benchmark.pbs, wrap the tool command in a 'printf' statement, save, then resubmit NOT in test mode
-#	- Once the command looks correct, remove the printf, save, and run as usual 
-#5) Submit the benchmarking jobs to the queue:
-#	- Example command to run benchmarking on hugemem queue:
-#	`bash <tool>_benchmark_run.sh hugemem`
-
-
-################################################
 ### REQUIRED CHANGES ###
 ################################################
 
