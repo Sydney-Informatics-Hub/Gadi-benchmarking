@@ -1,6 +1,22 @@
 #!/bin/bash
 
+################################################
+### INSTRUCTIONS
+################################################
+
 # Don't run this script directly, it is launched by the paired <tool>_benchmark_run.sh script 
+# Edits are required: 
+#	- Edit -P PBS directive to your NCI project
+#	- Edit -lstorage PBS directive to your required NCI storage paths
+#	- Edit walltime to be sufficient for the lowest-resourced run of your job
+#	- Add your sript body (including module loads) between 'YOUR SCRIPT HERE' and 'END YOUR SCRIPT' headers
+#	- Ensure you have left the last line 'end_test=end' intact
+# 	- Use the variables 'outfile_prefix' and 'outdir' for IO within your script
+#       - Variable 'prefix' may be used for inputs, if relevant
+
+################################################
+### PBS DIRECTIVES
+################################################
 
 #PBS -P <project>
 #PBS -l walltime=02:00:00
@@ -9,17 +25,36 @@
 #PBS -l wd
 #PBS -lstorage=scratch/<project>
 
-### Modules:
-module load nci-parallel/1.0.0a
-module load <as required>
+################################################
+### FOR TEST RUN
+################################################
 
-### Temp dirs, if required:  
-export SINGULARITY_TMPDIR=${PBS_JOBFS}/tmp
-export SINGULARITY_CACHEDIR=${PBS_JOBFS}/cache
+if [[ $test == 'true' ]]
+then
+	printf "* ${script} has received the following parameters for the first benchmark run at ${ncpus} NCPUS:\n\n"
+	printf "\t- Job name: ${job_name}\n\t- PBS o log: ${dot_o}\n\t- PBS e log: ${dot_e}\n"
+	printf "\t- \$prefix: ${prefix}\n\t- \$outdir: ${outdir}\n\t- \$outfile_prefix: ${outfile_prefix}\n";
+	printf "\n* Please ensure ${script} uses the variables \"\$outdir\" and \"\$outfile_prefix\" for outputs generated\n" 
+	printf "\n* Variable \"\$prefix\" can be used to import inputs, as required/relevant for your job\n\n"
+	printf "* Here is your script for ${ncpus} NCPUS:\n\n\t- Please review variables carefully before proceeding to run without 'test' mode\n\n"
+	sed -n "/^begin_test/,/^end_test/{p;/^end/q}" ${script} | sed '1d' | head -n -1 
+	exit
+fi
 
-mkdir -p ${SINGULARITY_TMPDIR} ${SINGULARITY_CACHEDIR}
+begin_test=begin
+################################################
+### YOUR SCRIPT HERE 
+################################################
 
-### Run command, adjust to suit tool: 
-<tool run command and optional parameters> \
-	-i ${input} \ 
-        -o ${outdir}/${outfile_prefix}.out > ${outdir}/${outfile_prefix}.log 2>&1
+
+
+# Include all the commands required to run your job
+# Use ${outdir} for output directory path
+# Use ${outfile_prefix} for output file prefix
+
+
+
+################################################
+### END YOUR SCRIPT
+################################################
+end_test=end
