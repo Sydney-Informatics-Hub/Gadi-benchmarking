@@ -36,43 +36,11 @@ short=
 # 	removing the low CPU valies if they will not provide adequate resources for the task
 # - 	You want to add queue details for queues not included in the original repository scripts 
 
-queue=$1
+NODES=( 1 2 4 8 16 32)
+NCPUS=( 1 2 ) #  Reasonable Artemis numbers
+max_cpus=32 # total CPU on nodes
+mem_per_cpu=4 # adjust depending on which queue you are benchmarking on 
 
-if [ -z ${queue} ]
-then
-	printf "Please specify queue name as first argument to script.\nCurrently accepted values are ONE OF normal express hugemem normalbw expressbw.\n"
-	exit
-fi
-
-if [[ "${queue}" =~ ^(normal|express)$ ]]
-then
-	NCPUS=( 1 2 4 6 12 24 48 ) #  based on Gadi NUMA domains for queue
-	#NCPUS=( 4 6 12 24 48) # optional - may need to reduce the number of benchmark runs
-	#NCPUS=( 8 ) # or test a single value not included in initial runs
-	max_cpus=48 # total CPU on nodes
-	max_jobfs=400 # In GB, adjust depending on which queue you are benchmarking on  
-	mem_per_cpu=4 # adjust depending on which queue you are benchmarking on 
-	jobfs_per_cpu=$(( $max_jobfs / $max_cpus ))
-elif [[ "${queue}" =~ ^(hugemem)$ ]]
-then
-	max_cpus=48 
-	max_jobfs=1400  
-	mem_per_cpu=31 
-	jobfs_per_cpu=$(( $max_jobfs / $max_cpus ))
-	NCPUS=( 1 2 4 6 12 24 48 ) 
-	#NCPUS=( 2 4 6 12 ) # optional - may need to reduce the number of benchmark runs
-elif [[ "${queue}" =~ ^(normalbw|expressbw)$ ]]
-then
-	max_cpus=28 
-	max_jobfs=400  
-	mem_per_cpu=9 
-	jobfs_per_cpu=$(( $max_jobfs / $max_cpus ))
-	NCPUS=( 1 7 14 28 )
-	#NCPUS=( 7 14 28 ) # optional - may need to reduce the number of benchmark runs
-else
-	printf "Resource parameters for ${queue} not defined.\nPlease add queue details to this script and re-submit.\n"
-	exit
-fi
 
 ################################################
 ### DO NOT EDIT BELOW THIS LINE 
@@ -85,46 +53,45 @@ logs=./PBS_logs/${tool}
 mkdir -p PBS_logs ${tool} ${outdir} ${logs}
 
  
-for ncpus in "${NCPUS[@]}"
+for nchunks in "${NODES[@]}"
 do
-   mem=$(( ncpus * ${mem_per_cpu}))
-   jobfs=$(( ncpus * ${jobfs_per_cpu}))
+	for ncpus in "${NCPUS[@]}"
+	do
+	   mem=$(( ncpus * ${mem_per_cpu}))
    
-   if [[ ${ncpus} == ${max_cpus} ]]
-   then 
-   	mem=$(( $mem - 2 ))
-	jobfs=${max_jobfs}
-   fi
+	   if [[ ${ncpus} == ${max_cpus} ]]
+	   then 
+	   	mem=$(( $mem - 2 ))
+	   fi
    
     
-   job_name=${short}_${ncpus}N_${mem}M
-   outfile_prefix=${queue}_${ncpus}NCPUS_${mem}MEM 
-   dot_e=${logs}/${queue}_${ncpus}NCPUS_${mem}MEM_${prefix}.e
-   dot_o=${logs}/${queue}_${ncpus}NCPUS_${mem}MEM_${prefix}.o
+	   job_name=${short}_${ncpus}N_${mem}M
+	   outfile_prefix=${ncpus}NCPUS_${mem}MEM 
+	   dot_e=${logs}/${ncpus}NCPUS_${mem}MEM_${prefix}.e
+	   dot_o=${logs}/${ncpus}NCPUS_${mem}MEM_${prefix}.o
    
    
-   if [[ $2 == 'test' ]]
-   then
-   	printf "################################################\n### TESTING\n################################################\n"
-	printf "\n* Will run ${script} at CPU valus of ${NCPUS[@]}\n\n"
-	test=true
-   	bash $script
-   	exit 
-   fi
+	   if [[ $1 == 'test' ]]
+	   then
+	   	printf "################################################\n### TESTING\n################################################\n"
+		printf "\n* Will run ${script} at CPU valus of ${NCPUS[@]}\n\n"
+		test=true
+	   	bash $script
+	   	exit 
+	   fi
    
-   printf "\nBenchmarking ${tool} on queue ${queue} for ${prefix} with ${ncpus} NCPUS and ${mem} MEM with job ID: "
+	   printf "\nBenchmarking ${tool} on queue ${queue} for ${prefix} with ${ncpus} NCPUS and ${mem} MEM with job ID: "
       
-   qsub \
-   	-q ${queue} \
-   	-l ncpus=${ncpus} \
-	-l mem=${mem}GB \
-	-l jobfs=${jobfs}GB \
-	-o ${dot_o} \
-	-e ${dot_e} \
-	-N ${job_name} \
-	-v ncpus="${ncpus}",outfile_prefix="${outfile_prefix}",prefix="${prefix}",outdir="${outdir}" \
-	${script}
+	   qsub \
+	   	-q defaultQ \
+	   	-l select=${nchunks}:ncpus=${ncpus}:mem=${mem}GB \
+		-o ${dot_o} \
+		-e ${dot_e} \
+		-N ${job_name} \
+		-v ncpus="${ncpus}",outfile_prefix="${outfile_prefix}",prefix="${prefix}",outdir="${outdir}" \
+		${script}
     
-   sleep 2
-   echo
+	   sleep 2
+	   echo
+	done
 done

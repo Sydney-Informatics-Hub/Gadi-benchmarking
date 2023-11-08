@@ -20,10 +20,6 @@
 
 #PBS -P <project>
 #PBS -l walltime=02:00:00
-#PBS -q normal
-#PBS -W umask=022
-#PBS -l wd
-#PBS -lstorage=scratch/<project>
 
 ################################################
 ### FOR TEST RUN
