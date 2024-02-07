@@ -8,7 +8,7 @@ Given the need to frequently benchmark bioinformatics tools when developing pipe
 
 The template consists of a pair of scripts:
 * `<tool>_benchmark_run.sh` : sets up the resources for each benchmark run
-* `<tool>_benchmark.pbs` : is launched by the above, once for each identical analysis at the different resource thresholds
+* `<tool>_benchmark.pbs`  is launched by the above, once for each identical analysis at the different resource thresholds
 
 The CPU, memory and jobfs settings are setup according to the architecture of the nodes on the queue. 
 
