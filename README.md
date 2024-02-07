@@ -7,7 +7,7 @@ This is to benchmark resources for multi-threading tools, to help determine the 
 Given the need to frequently benchmark bioinformatics tools when developing pipelines, this repository contains a pair of sample scripts that can be adapted for use to other tools. 
 
 The template consists of a pair of scripts:
-* `<tool>_benchmark_run.sh` : sets up the resources for each benchmark run
+* `<tool>_benchmark_run.sh`  sets up the resources for each benchmark run
 * `<tool>_benchmark.pbs`  is launched by the above, once for each identical analysis at the different resource thresholds
 
 The CPU, memory and jobfs settings are setup according to the architecture of the nodes on the queue. 
