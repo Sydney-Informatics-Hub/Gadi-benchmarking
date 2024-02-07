@@ -34,7 +34,7 @@ Change the names of the pair of scripts, replacing `tool` with the name of the t
 Open `<tool>_benchmark.pbs` with your preferred text editor, and perform the following edits:
 
 * Edit `-P` PBS directive to your NCI project
-* Edit `-lstorage` PBS directive to your required NCI storage paths, ensuring to use the [correct syntax for this directive](https://opus.nci.org.au/display/Help/PBS+Directives+Explained#PBSDirectivesExplained--lstorage=%3Cscratch/a00+gdata/xy11+massdata/a00%3E)
+* Edit `-l storage` PBS directive to your required NCI storage paths, ensuring to use the [correct syntax for this directive](https://opus.nci.org.au/display/Help/PBS+Directives+Explained#PBSDirectivesExplained--lstorage=%3Cscratch/a00+gdata/xy11+massdata/a00%3E)
 * Edit `-l walltime` to be sufficient for the lowest-resourced run of your job
 * Add your script body between `YOUR SCRIPT HERE` and `END YOUR SCRIPT` headers. 
     * This means ALL COMMANDS REQUIRED TO RUN YOUR TOOL
